@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from typing import List
 
 
@@ -12,7 +12,7 @@ REQUIREMENTS_FILE  = "requirements.txt"
 
 def get_requirements_list()->List[str]:
     with open(REQUIREMENTS_FILE) as requirements_file:
-        requirements_file.readlines() 
+        requirements_file.readlines().remove('-e .')
 
 
 
@@ -21,6 +21,6 @@ setup(
     version=VERSION,
     author=AUTHOR,
     description=DESCRIPTION,
-    packages=['housing'],
+    packages=find_packages(),
     install_requires=get_requirements_list()
 )
