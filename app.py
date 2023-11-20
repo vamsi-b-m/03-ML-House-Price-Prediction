@@ -14,7 +14,7 @@ def index():
         housing = HousingException(e, sys)
         logging.info(housing.error_message)
         logging.info("Testing the log files")
-    return "Hello"
+    return "Hello Dude...!!"
 
 
 if __name__ == "__main__":
