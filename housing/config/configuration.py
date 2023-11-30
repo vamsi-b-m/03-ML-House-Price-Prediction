@@ -24,12 +24,14 @@ class Configuration:
                 self.time_stamp
             )
             data_ingestion_info = self.config_info[DATA_INGESTION_CONFIG_KEY]
-            dataset_download_url = data_ingestion_config[DATA_INGESTION_DOWNLOAD_URL_KEY]
+            dataset_download_url = data_ingestion_info[DATA_INGESTION_DOWNLOAD_URL_KEY]
             tgz_download_dir = os.path.join(data_ingestion_artifact_dir,
                                             data_ingestion_info[DATA_INGESTION_TGZ_DONWLOAD_DIR_KEY]
             )
             raw_data_dir = os.path.join(data_ingestion_artifact_dir, 
                                         data_ingestion_info[DATA_INGESTION_RAW_DATA_DIR_KEY])
+
+            
             ingested_data_dir = os.path.join(
                 data_ingestion_artifact_dir,
                 data_ingestion_info[DATA_INGESTION_INGESTED_DIR_NAME_KEY]
@@ -52,7 +54,27 @@ class Configuration:
             raise HousingException(e, sys) from e
 
     def get_data_validation_config(self) -> DataValidationConfig:
-        pass
+        try:
+            artifact_dir = self.training_pipeline_config.artifact_dir
+            data_validation_artifact_dir = os.path.join(
+                artifact_dir,
+                DATA_VALIDATION_ARTIFACT_DIR,
+                self.time_stamp
+            )
+            data_validation_config = self.config_info[DATA_VALIDATION_CONFIG_KEY]
+            schema_dir = os.path.join(
+                data_validation_artifact_dir, 
+                data_validation_config[DATA_VALIDATION_SCHEMA_DIR]
+            )
+            schema_file_name = data_validation_config[DATA_VALIDATION_SCHEMA_FILE_NAME]
+            report_file_name = data_validation_config[DATA_VALIDATION_REPORT_FILE_NAME]
+            report_page_file_name = data_validation_config[DATA_VALIDATION_REPORT_PAGE_FILE_NAME]
+
+            data_validation_config = DataValidationConfig(schema_dir=schema_dir, schema_file_name=schema_file_name, report_file_name=report_file_name, report_page_file_name=report_page_file_name)
+            return data_validation_config
+        
+        except Exception as e:
+            raise HousingException(e, sys) from e
 
     def get_data_transformation_config(self) -> DataTransformationConfig:
         pass
