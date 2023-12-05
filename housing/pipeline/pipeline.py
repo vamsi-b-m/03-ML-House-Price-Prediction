@@ -20,6 +20,7 @@ class Pipeline:
             data_ingestion = DataIngestion(data_ingestion_config=self.config.get_data_ingestion_config())
             data_ingestion.initiate_data_ingestion()
         except Exception as e:
+            print("Exception : ", e)
             raise HousingException(e, sys) from e
         
     def start_data_validation(self):

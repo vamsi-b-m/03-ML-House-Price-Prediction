@@ -3,6 +3,7 @@ import tarfile
 from six.moves import urllib
 import pandas as pd
 import numpy as np
+import shutil
 from sklearn.model_selection import StratifiedShuffleSplit
 from housing.entity.config_entity import DataIngestionConfig
 from housing.exception import HousingException
@@ -54,8 +55,11 @@ class DataIngestion:
             os.makedirs(raw_data_dir, exist_ok=True)
 
             logging.info(f"Extracting tgz file: [{tgz_file_path}] into dir: [{raw_data_dir}]")
-            with tarfile.open(tgz_file_path) as housing_tgz_file_obj:
-                housing_tgz_file_obj.extractall(path=raw_data_dir)
+            with tarfile.open(tgz_file_path, 'r:gz') as housing_tgz_file_obj:
+               housing_tgz_file_obj.extractall(path=raw_data_dir)
+            # with open(tgz_file_path, "rb") as housing_tgz_file_obj:
+            #     tar = tarfile.open(fileobj=housing_tgz_file_obj)
+            #     tar.extractall(raw_data_dir)
             logging.info(f"Extraction Completed")
 
         except Exception as e:
@@ -69,6 +73,7 @@ class DataIngestion:
 
             housing_file_path = os.path.join(raw_data_dir, file_name)
 
+            logging.info(f"Reading CSV file [{housing_file_path}]")
             housing_data_frame = pd.read_csv(housing_file_path)
 
             housing_data_frame['income_cat'] = pd.cut(
@@ -77,6 +82,7 @@ class DataIngestion:
                 labels = [1, 2, 3, 4, 5]
             )
 
+            logging.info(f"splitting data into train and test")
             strat_train_set = None
             start_test_set = None
 
@@ -96,10 +102,12 @@ class DataIngestion:
                 file_name
             )
 
+            logging.info(f"Exporting training dataset into file [{train_file_path}]")
             if strat_train_set is not None:
                 os.makedirs(self.data_ingestion_config.ingested_train_dir, exist_ok=True)
                 strat_train_set.to_csv(train_file_path, index=False)
-
+            
+            logging.info(f"Exporting test dataset into file [{test_file_path}]")
             if start_test_set is not None:
                 os.makedirs(self.data_ingestion_config.ingested_test_dir, exist_ok=True)
                 start_test_set.to_csv(test_file_path, index=False)
@@ -110,10 +118,13 @@ class DataIngestion:
                                             is_ingested=True,
                                             message=f"Data Ingestion Completed Successfully."
                                         )
+            
+            logging.info(f"Data Ingestion Artifact : [{data_ingestion_artifact}]")
             return data_ingestion_artifact
 
         except Exception as e:
             raise HousingException(e, sys) from e
+        
     def initiate_data_ingestion(self) -> DataIngestionArtifact:
         try:
             tgz_file_path = self.download_housing_data()
@@ -123,5 +134,5 @@ class DataIngestion:
             raise HousingException(e, sys) from e
 
 
-    def __def__(self):
+    def __del__(self):
         logging.info(f"{'='*20}Data Ingestion log Completed.{'='*20}\n\n")
