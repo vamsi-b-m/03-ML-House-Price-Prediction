@@ -9,6 +9,7 @@ from housing.entity.config_entity import DataIngestionConfig
 from housing.components.data_ingestion import DataIngestion
 from housing.components.data_validation import DataValidation
 from housing.components.data_transformer import DataTransformation
+from housing.components.model_trainer import ModelTrainer
 
 class Pipeline:
     
@@ -40,7 +41,11 @@ class Pipeline:
             raise HousingException(e, sys) from e
 
     def start_model_trainer(self):
-        pass
+        try:
+            model_trainer = Mo
+        except Exception as e:
+            raise HousingException(e, sys) from e
+        
 
     def start_model_evaluation(self):
         pass
