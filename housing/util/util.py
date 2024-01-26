@@ -6,14 +6,28 @@ import dill
 from housing.exception import HousingException
 from housing.constant import *
 
-def read_yml_file(file_path:str)->dict:
+def write_yaml_file(file_path:str, data:dict=None):
+    """
+    Create yaml file
+    file_path:str
+    data: dict
+    """
+    try:
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with open(file_path, "w") as yaml_file:
+            if data is not None:
+                yaml.dump(data, yaml_file)
+    except Exception as e:
+        raise HousingException(e, sys) from e
+
+def read_yaml_file(file_path:str)->dict:
     """
     Reads YML file and returns the contents as a dictionary.
     file_path:str
     """
     try:
-        with open(file_path, 'rb') as yml_file:
-            return yaml.safe_load(yml_file)
+        with open(file_path, 'rb') as yaml_file:
+            return yaml.safe_load(yaml_file)
     except Exception as e:
         raise HousingException(e, sys) from e
     
@@ -69,7 +83,7 @@ def load_object(file_path: str):
 @staticmethod
 def load_data(file_path:str, schema_file_path:str) -> pd.DataFrame:
     try:
-        dataset_schema = read_yml_file(schema_file_path)
+        dataset_schema = read_yaml_file(schema_file_path)
         schema = dataset_schema[DATASET_SCHEMA_COLUMNS_KEY]
         dataframe = pd.read_csv(file_path)
         error_message = ""
