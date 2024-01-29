@@ -3,7 +3,7 @@ from housing.logger import logging
 from housing.exception import HousingException
 from housing.entity.config_entity import DataTransformationConfig
 from housing.entity.artifact_entity import DataIngestionArtifact, DataValidationArtifact, DataTransformationArtifact
-from housing.util.util import read_yml_file, save_object, save_numpy_array_data, load_data, load_numpy_array_data, load_object
+from housing.util.util import read_yaml_file, save_object, save_numpy_array_data, load_data, load_numpy_array_data, load_object
 from housing.constant import * 
 import numpy as np
 import pandas as pd
@@ -79,7 +79,7 @@ class DataTransformation:
         try:
             schema_file_path = self.data_validation_artifact.schema_file_path
 
-            dataset_schema = read_yml_file(file_path=schema_file_path)
+            dataset_schema = read_yaml_file(file_path=schema_file_path)
             numerical_columns = dataset_schema[NUMERICAL_COLUMN_KEY]
             categorical_columns = dataset_schema[CATEGORICAL_COLUMN_KEY]
 
@@ -111,7 +111,7 @@ class DataTransformation:
         except Exception as e:
             raise HousingException(e, sys) from e
         
-    def initiate_data_transformation(self)-> DataTransformationArtifact:
+    def initiate_data_transformation(self) -> DataTransformationArtifact:
         try:
             logging.info(f"Obtaining Proprocessing Object")
             preprocessing_obj = self.get_data_transformer_object()
@@ -128,7 +128,7 @@ class DataTransformation:
             test_df = load_data(file_path=test_file_path, schema_file_path=schema_file_path)
 
             logging.info(f"Obtaining the schema data")
-            schema = read_yml_file(file_path=schema_file_path)
+            schema = read_yaml_file(file_path=schema_file_path)
 
             logging.info(f"Target Column")
             target_column_name = schema[TARGET_COLUMN_KEY]
@@ -167,7 +167,7 @@ class DataTransformation:
 
             data_transformation_artifact = DataTransformationArtifact(
                 is_transformed=True,
-                message="Data Transformstion Successful",
+                message="Data Transformation Successful",
                 transformed_train_file_path=transformed_train_file_path,
                 transformed_test_file_path=transformed_test_file_path,
                 preprocessed_object_file_path=preprocessing_obj_file_path

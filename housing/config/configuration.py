@@ -1,6 +1,7 @@
 import os, sys
 from housing.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig, ModelTrainerConfig, ModelEvaluationConfig, ModelPusherConfig, TrainingPipelineConfig
-from housing.util.util import read_yml_file
+from housing.util.util import read_yaml_file
+
 from housing.constant import *
 from housing.exception import HousingException
 from housing.logger import logging
@@ -9,7 +10,7 @@ class Configuration:
     
     def __init__(self, config_file_path:str=CONFIG_FILE_PATH, current_time_stamp:str=CURRENT_TIME_STAMP) -> None:
         try:
-            self.config_info = read_yml_file(file_path=config_file_path)
+            self.config_info = read_yaml_file(file_path=config_file_path)
             self.training_pipeline_config = self.get_training_pipeline_config()
             self.time_stamp = current_time_stamp
         except Exception as e:
@@ -144,10 +145,8 @@ class Configuration:
                 model_trainer_config[MODEL_TRAINER_TRAINED_MODEL_CONFIG_FILE_NAME_KEY]
             )
             
-            model_config_file_path = os.path.join(
-                model_trainer_artifact_dir,
-                model_trainer_config[MODEL_TRAINER_TRAINED_MODEL_CONFIG_DIR_KEY],
-                model_trainer_config[MODEL_TRAINER_TRAINED_MODEL_CONFIG_FILE_NAME_KEY]
+            model_config_file_path = os.path.join(model_trainer_config[MODEL_TRAINER_TRAINED_MODEL_CONFIG_DIR_KEY],
+                                            model_trainer_config[MODEL_TRAINER_TRAINED_MODEL_CONFIG_FILE_NAME_KEY]
             )
 
             base_accuracy = model_trainer_config[MODEL_TRAINER_BASE_ACCURACY_KEY]

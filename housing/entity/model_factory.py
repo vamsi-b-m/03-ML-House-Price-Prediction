@@ -136,7 +136,6 @@ def get_sample_model_config_yaml_file(export_dir: str):
         return export_file_path
     except Exception as e:
         raise HousingException(e, sys) from e
-    
 
 class ModelFactory:
     def __init__(self, model_config_path: str = None):
@@ -168,7 +167,7 @@ class ModelFactory:
     def read_params(config_path: str) -> dict:
         try:
             with open(config_path) as yaml_file:
-                config: dict =  yaml.safe_load(yaml_file)
+                config: dict = yaml.safe_load(yaml_file)
             return config
         except Exception as e:
             raise HousingException(e, sys) from e
@@ -216,32 +215,37 @@ class ModelFactory:
         except Exception as e:
             raise HousingException(e, sys) from e
         
-    def get_initialized_model_list(self) -> List(InitializedModelDetail):
+    def get_initialized_model_list(self) -> List[InitializedModelDetail]:
         """
-        This function will return the list of moddel details,
-        returns List(ModelDetails)
+        This function will return a list of model details.
+        return List[ModelDetail]
         """
         try:
             initialized_model_list = []
             for model_serial_number in self.models_initialization_config.keys():
+
                 model_initialization_config = self.models_initialization_config[model_serial_number]
                 model_obj_ref = ModelFactory.class_for_name(module_name=model_initialization_config[MODULE_KEY],
                                                             class_name=model_initialization_config[CLASS_KEY]
                                                             )
                 model = model_obj_ref()
+                
                 if PARAM_KEY in model_initialization_config:
                     model_obj_property_data = dict(model_initialization_config[PARAM_KEY])
-                    model = ModelFactory.update_property_of_class(instance_ref=model, property_data=model_obj_property_data)
-                
+                    model = ModelFactory.update_property_of_class(instance_ref=model,
+                                                                  property_data=model_obj_property_data)
+
                 param_grid_search = model_initialization_config[SEARCH_PARAM_GRID_KEY]
-                model_name = f"{model_initialization_config[MODULE_KEY]}, {model_initialization_config[CLASS_KEY]}"
+                model_name = f"{model_initialization_config[MODULE_KEY]}.{model_initialization_config[CLASS_KEY]}"
 
                 model_initialization_config = InitializedModelDetail(model_serial_number=model_serial_number,
                                                                      model=model,
                                                                      param_grid_search=param_grid_search,
                                                                      model_name=model_name
                                                                      )
+
                 initialized_model_list.append(model_initialization_config)
+
             self.initialized_model_list = initialized_model_list
             return self.initialized_model_list
         except Exception as e:
